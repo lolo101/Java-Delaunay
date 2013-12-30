@@ -50,7 +50,7 @@ public class TestGraphImpl extends VoronoiGraph {
     }
 
     @Override
-    protected Enum getBiome(Center p) {
+    protected ColorData getBiome(Center p) {
         if (p.ocean) {
             return ColorData.OCEAN;
         } else if (p.water) {

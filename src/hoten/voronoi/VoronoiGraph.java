@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -22,9 +24,9 @@ import java.util.Random;
  */
 public abstract class VoronoiGraph {
 
-    final public ArrayList<Edge> edges = new ArrayList();
-    final public ArrayList<Corner> corners = new ArrayList();
-    final public ArrayList<Center> centers = new ArrayList();
+    final public List<Edge> edges = new ArrayList<>();
+    final public List<Corner> corners = new ArrayList<>();
+    final public List<Center> centers = new ArrayList<>();
     final public Rectangle bounds;
     final private Random r;
     public BufferedImage img;
@@ -38,9 +40,9 @@ public abstract class VoronoiGraph {
         dipWidth = r.nextDouble() * .5 + .2;
         bounds = v.get_plotBounds();
         for (int i = 0; i < numLloydRelaxations; i++) {
-            ArrayList<Point> points = v.siteCoords();
+            List<Point> points = v.siteCoords();
             for (Point p : points) {
-                ArrayList<Point> region = v.region(p);
+                List<Point> region = v.region(p);
                 double x = 0;
                 double y = 0;
                 for (Point c : region) {
@@ -245,8 +247,8 @@ public abstract class VoronoiGraph {
     }
 
     private void buildGraph(Voronoi v) {
-        final HashMap<Point, Center> pointCenterMap = new HashMap();
-        final ArrayList<Point> points = v.siteCoords();
+        final Map<Point, Center> pointCenterMap = new HashMap<>();
+        final List<Point> points = v.siteCoords();
         for (Point p : points) {
             Center c = new Center();
             c.loc = p;
@@ -260,8 +262,8 @@ public abstract class VoronoiGraph {
             v.region(c.loc);
         }
 
-        final ArrayList<hoten.voronoi.nodename.as3delaunay.Edge> libedges = v.edges();
-        final HashMap<Integer, Corner> pointCornerMap = new HashMap();
+        final List<hoten.voronoi.nodename.as3delaunay.Edge> libedges = v.edges();
+        final Map<Integer, Corner> pointCornerMap = new HashMap<>();
 
         for (hoten.voronoi.nodename.as3delaunay.Edge libedge : libedges) {
             final LineSegment vEdge = libedge.voronoiEdge();
@@ -326,20 +328,20 @@ public abstract class VoronoiGraph {
 
     // Helper functions for the following for loop; ideally these
     // would be inlined
-    private void addToCornerList(ArrayList<Corner> list, Corner c) {
+    private void addToCornerList(List<Corner> list, Corner c) {
         if (c != null && !list.contains(c)) {
             list.add(c);
         }
     }
 
-    private void addToCenterList(ArrayList<Center> list, Center c) {
+    private void addToCenterList(List<Center> list, Center c) {
         if (c != null && !list.contains(c)) {
             list.add(c);
         }
     }
 
     //ensures that each corner is represented by only one corner object
-    private Corner makeCorner(HashMap<Integer, Corner> pointCornerMap, Point p) {
+    private Corner makeCorner(Map<Integer, Corner> pointCornerMap, Point p) {
         if (p == null) {
             return null;
         }
@@ -469,8 +471,8 @@ public abstract class VoronoiGraph {
         }
     }
 
-    private ArrayList<Corner> landCorners() {
-        final ArrayList<Corner> list = new ArrayList();
+    private List<Corner> landCorners() {
+        final List<Corner> list = new ArrayList<>();
         for (Corner c : corners) {
             if (!c.ocean && !c.coast) {
                 list.add(c);
@@ -479,7 +481,7 @@ public abstract class VoronoiGraph {
         return list;
     }
 
-    private void redistributeElevations(ArrayList<Corner> landCorners) {
+    private void redistributeElevations(List<Corner> landCorners) {
         Collections.sort(landCorners, new Comparator<Corner>() {
             @Override
             public int compare(Corner o1, Corner o2) {
@@ -592,7 +594,7 @@ public abstract class VoronoiGraph {
         }
     }
 
-    private void redistributeMoisture(ArrayList<Corner> landCorners) {
+    private void redistributeMoisture(List<Corner> landCorners) {
         Collections.sort(landCorners, new Comparator<Corner>() {
             @Override
             public int compare(Corner o1, Corner o2) {

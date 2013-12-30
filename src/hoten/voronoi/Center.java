@@ -2,6 +2,7 @@ package hoten.voronoi;
 
 import hoten.geom.Point;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Center.java
@@ -12,9 +13,9 @@ public class Center {
 
     public int index;
     public Point loc;
-    public ArrayList<Corner> corners = new ArrayList();//good
-    public ArrayList<Center> neighbors = new ArrayList();//good
-    public ArrayList<Edge> borders = new ArrayList();
+    public final List<Corner> corners = new ArrayList<>();//good
+    public final List<Center> neighbors = new ArrayList<>();//good
+    public final List<Edge> borders = new ArrayList<>();
     public boolean border, ocean, water, coast;
     public double elevation;
     public double moisture;

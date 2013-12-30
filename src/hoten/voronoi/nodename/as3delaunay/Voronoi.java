@@ -31,15 +31,17 @@ import hoten.geom.Point;
 import hoten.geom.Rectangle;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 public final class Voronoi {
 
     private SiteList _sites;
     private HashMap<Point, Site> _sitesIndexedByLocation;
-    private ArrayList<Triangle> _triangles;
-    private ArrayList<Edge> _edges;
+    private final List<Triangle> _triangles = new ArrayList<>();
+    private final List<Edge> _edges = new ArrayList<>();
     // TODO generalize this so it doesn't have to be a rectangle;
     // then we can make the fractal voronois-within-voronois
     private Rectangle _plotBounds;
@@ -60,7 +62,6 @@ public final class Voronoi {
                 _triangles.get(i).dispose();
             }
             _triangles.clear();
-            _triangles = null;
         }
         if (_edges != null) {
             n = _edges.size();
@@ -68,18 +69,17 @@ public final class Voronoi {
                 _edges.get(i).dispose();
             }
             _edges.clear();
-            _edges = null;
         }
         _plotBounds = null;
         _sitesIndexedByLocation = null;
     }
 
-    public Voronoi(ArrayList<Point> points, ArrayList<Color> colors, Rectangle plotBounds) {
+    public Voronoi(List<Point> points, List<Color> colors, Rectangle plotBounds) {
         init(points, colors, plotBounds);
         fortunesAlgorithm();
     }
 
-    public Voronoi(ArrayList<Point> points, ArrayList<Color> colors) {
+    public Voronoi(List<Point> points, List<Color> colors) {
         double maxWidth = 0, maxHeight = 0;
         for (Point p : points) {
             maxWidth = Math.max(maxWidth, p.x);
@@ -90,8 +90,8 @@ public final class Voronoi {
         fortunesAlgorithm();
     }
 
-    public Voronoi(int numSites, double maxWidth, double maxHeight, Random r, ArrayList<Color> colors) {
-        ArrayList<Point> points = new ArrayList();
+    public Voronoi(int numSites, double maxWidth, double maxHeight, Random r, List<Color> colors) {
+        List<Point> points = new ArrayList<>();
         for (int i = 0; i < numSites; i++) {
             points.add(new Point(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight));
         }
@@ -99,16 +99,14 @@ public final class Voronoi {
         fortunesAlgorithm();
     }
 
-    private void init(ArrayList<Point> points, ArrayList<Color> colors, Rectangle plotBounds) {
+    private void init(List<Point> points, List<Color> colors, Rectangle plotBounds) {
         _sites = new SiteList();
-        _sitesIndexedByLocation = new HashMap();
+        _sitesIndexedByLocation = new HashMap<>();
         addSites(points, colors);
         _plotBounds = plotBounds;
-        _triangles = new ArrayList();
-        _edges = new ArrayList();
     }
 
-    private void addSites(ArrayList<Point> points, ArrayList<Color> colors) {
+    private void addSites(List<Point> points, List<Color> colors) {
         int length = points.size();
         for (int i = 0; i < length; ++i) {
             addSite(points.get(i), colors != null ? colors.get(i) : null, i);
@@ -122,38 +120,38 @@ public final class Voronoi {
         _sitesIndexedByLocation.put(p, site);
     }
 
-    public ArrayList<Edge> edges() {
+    public List<Edge> edges() {
         return _edges;
     }
 
-    public ArrayList<Point> region(Point p) {
+    public List<Point> region(Point p) {
         Site site = _sitesIndexedByLocation.get(p);
         if (site == null) {
-            return new ArrayList();
+            return Collections.emptyList();
         }
         return site.region(_plotBounds);
     }
 
     // TODO: bug: if you call this before you call region(), something goes wrong :(
-    public ArrayList<Point> neighborSitesForSite(Point coord) {
-        ArrayList<Point> points = new ArrayList();
+    public List<Point> neighborSitesForSite(Point coord) {
+        List<Point> points = new ArrayList<>();
         Site site = _sitesIndexedByLocation.get(coord);
         if (site == null) {
             return points;
         }
-        ArrayList<Site> sites = site.neighborSites();
+        List<Site> sites = site.neighborSites();
         for (Site neighbor : sites) {
             points.add(neighbor.get_coord());
         }
         return points;
     }
 
-    public ArrayList<Circle> circles() {
+    public List<Circle> circles() {
         return _sites.circles();
     }
 
-    private ArrayList<Edge> selectEdgesForSitePoint(Point coord, ArrayList<Edge> edgesToTest) {
-        ArrayList<Edge> filtered = new ArrayList();
+    private List<Edge> selectEdgesForSitePoint(Point coord, List<Edge> edgesToTest) {
+        List<Edge> filtered = new ArrayList<>();
 
         for (Edge e : edgesToTest) {
             if (((e.get_leftSite() != null && e.get_leftSite().get_coord() == coord)
@@ -170,8 +168,8 @@ public final class Voronoi {
          }*/
     }
 
-    private ArrayList<LineSegment> visibleLineSegments(ArrayList<Edge> edges) {
-        ArrayList<LineSegment> segments = new ArrayList();
+    private List<LineSegment> visibleLineSegments(List<Edge> edges) {
+        List<LineSegment> segments = new ArrayList<>();
 
         for (Edge edge : edges) {
             if (edge.get_visible()) {
@@ -184,8 +182,8 @@ public final class Voronoi {
         return segments;
     }
 
-    private ArrayList<LineSegment> delaunayLinesForEdges(ArrayList<Edge> edges) {
-        ArrayList<LineSegment> segments = new ArrayList();
+    private List<LineSegment> delaunayLinesForEdges(List<Edge> edges) {
+        List<LineSegment> segments = new ArrayList<>();
 
         for (Edge edge : edges) {
             segments.add(edge.delaunayLine());
@@ -194,28 +192,24 @@ public final class Voronoi {
         return segments;
     }
 
-    public ArrayList<LineSegment> voronoiBoundaryForSite(Point coord) {
+    public List<LineSegment> voronoiBoundaryForSite(Point coord) {
         return visibleLineSegments(selectEdgesForSitePoint(coord, _edges));
     }
 
-    public ArrayList<LineSegment> delaunayLinesForSite(Point coord) {
+    public List<LineSegment> delaunayLinesForSite(Point coord) {
         return delaunayLinesForEdges(selectEdgesForSitePoint(coord, _edges));
     }
 
-    public ArrayList<LineSegment> voronoiDiagram() {
+    public List<LineSegment> voronoiDiagram() {
         return visibleLineSegments(_edges);
     }
 
-    /*public ArrayList<LineSegment> delaunayTriangulation(keepOutMask:BitmapData = null)
-     {
-     return delaunayLinesForEdges(selectNonIntersectingEdges(keepOutMask, _edges));
-     }*/
-    public ArrayList<LineSegment> hull() {
+    public List<LineSegment> hull() {
         return delaunayLinesForEdges(hullEdges());
     }
 
-    private ArrayList<Edge> hullEdges() {
-        ArrayList<Edge> filtered = new ArrayList();
+    private List<Edge> hullEdges() {
+        List<Edge> filtered = new ArrayList<>();
 
         for (Edge e : _edges) {
             if (e.isPartOfConvexHull()) {
@@ -233,17 +227,17 @@ public final class Voronoi {
          }*/
     }
 
-    public ArrayList<Point> hullPointsInOrder() {
-        ArrayList<Edge> hullEdges = hullEdges();
+    public List<Point> hullPointsInOrder() {
+        List<Edge> hullEdges = hullEdges();
 
-        ArrayList<Point> points = new ArrayList();
+        List<Point> points = new ArrayList<>();
         if (hullEdges.isEmpty()) {
             return points;
         }
 
         EdgeReorderer reorderer = new EdgeReorderer(hullEdges, Site.class);
         hullEdges = reorderer.get_edges();
-        ArrayList<LR> orientations = reorderer.get_edgeOrientations();
+        List<LR> orientations = reorderer.get_edgeOrientations();
         reorderer.dispose();
 
         LR orientation;
@@ -257,34 +251,11 @@ public final class Voronoi {
         return points;
     }
 
-    /*public ArrayList<LineSegment> spanningTree(String type, keepOutMask:BitmapData = null)
-     {
-     ArrayList<Edge>  edges = selectNonIntersectingEdges(keepOutMask, _edges);
-     ArrayList<LineSegment>  segments = delaunayLinesForEdges(edges);
-     return kruskal(segments, type);
-     }*/
-    public ArrayList<ArrayList<Point>> regions() {
+    public List<List<Point>> regions() {
         return _sites.regions(_plotBounds);
     }
 
-    /*public ArrayList<Integer> siteColors(referenceImage:BitmapData = null)
-     {
-     return _sites.siteColors(referenceImage);
-     }*/
-    /**
-     *
-     * @param proximityMap a BitmapData whose regions are filled with the site
-     * index values; see PlanePointsCanvas::fillRegions()
-     * @param x
-     * @param y
-     * @return coordinates of nearest Site to (x, y)
-     *
-     */
-    /*public Point nearestSitePoint(proximityMap:BitmapData,double x, double y)
-     {
-     return _sites.nearestSitePoint(proximityMap, x, y);
-     }*/
-    public ArrayList<Point> siteCoords() {
+    public List<Point> siteCoords() {
         return _sites.siteCoords();
     }
 
@@ -301,8 +272,8 @@ public final class Voronoi {
         int sqrt_nsites = (int) Math.sqrt(_sites.get_length() + 4);
         HalfedgePriorityQueue heap = new HalfedgePriorityQueue(dataBounds.y, dataBounds.height, sqrt_nsites);
         EdgeList edgeList = new EdgeList(dataBounds.x, dataBounds.width, sqrt_nsites);
-        ArrayList<Halfedge> halfEdges = new ArrayList();
-        ArrayList<Vertex> vertices = new ArrayList();
+        List<Halfedge> halfEdges = new ArrayList<>();
+        List<Vertex> vertices = new ArrayList<>();
 
         Site bottomMostSite = _sites.next();
         newSite = _sites.next();

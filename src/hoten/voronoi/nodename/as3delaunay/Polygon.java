@@ -1,13 +1,13 @@
 package hoten.voronoi.nodename.as3delaunay;
 
 import hoten.geom.Point;
-import java.util.ArrayList;
+import java.util.List;
 
 public final class Polygon {
 
-    private ArrayList<Point> _vertices;
+    private List<Point> _vertices;
 
-    public Polygon(ArrayList<Point> vertices) {
+    public Polygon(List<Point> vertices) {
         _vertices = vertices;
     }
 

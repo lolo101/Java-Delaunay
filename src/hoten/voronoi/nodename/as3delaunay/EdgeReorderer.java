@@ -1,26 +1,28 @@
 package hoten.voronoi.nodename.as3delaunay;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public final class EdgeReorderer {
 
-    private ArrayList<Edge> _edges;
-    private ArrayList<LR> _edgeOrientations;
+    private List<Edge> _edges;
+    private List<LR> _edgeOrientations;
 
-    public ArrayList<Edge> get_edges() {
+    public List<Edge> get_edges() {
         return _edges;
     }
 
-    public ArrayList<LR> get_edgeOrientations() {
+    public List<LR> get_edgeOrientations() {
         return _edgeOrientations;
     }
 
-    public EdgeReorderer(ArrayList<Edge> origEdges, Class criterion) {
+    public EdgeReorderer(List<Edge> origEdges, Class<?> criterion) {
         if (criterion != Vertex.class && criterion != Site.class) {
             throw new Error("Edges: criterion must be Vertex or Site");
         }
-        _edges = new ArrayList();
-        _edgeOrientations = new ArrayList();
+        _edges = new ArrayList<>();
+        _edgeOrientations = new ArrayList<>();
         if (origEdges.size() > 0) {
             _edges = reorderEdges(origEdges, criterion);
         }
@@ -31,19 +33,18 @@ public final class EdgeReorderer {
         _edgeOrientations = null;
     }
 
-    private ArrayList<Edge> reorderEdges(ArrayList<Edge> origEdges, Class criterion) {
-        int i, j;
+    private List<Edge> reorderEdges(List<Edge> origEdges, Class<?> criterion) {
         int n = origEdges.size();
         Edge edge;
         // we're going to reorder the edges in order of traversal
-        ArrayList<Boolean> done = new ArrayList(n);
+        List<Boolean> done = new ArrayList<>(n);
         int nDone = 0;
         for (int k = 0; k < n; k++) {
             done.add( false);
         }
-        ArrayList<Edge> newEdges = new ArrayList();
+        List<Edge> newEdges = new ArrayList<>();
 
-        i = 0;
+        int i = 0;
         edge = origEdges.get(i);
         newEdges.add(edge);
         _edgeOrientations.add(LR.LEFT);
@@ -51,7 +52,7 @@ public final class EdgeReorderer {
         ICoord lastPoint = (criterion == Vertex.class) ? edge.get_rightVertex() : edge.get_rightSite();
 
         if (firstPoint == Vertex.VERTEX_AT_INFINITY || lastPoint == Vertex.VERTEX_AT_INFINITY) {
-            return new ArrayList();
+            return Collections.emptyList();
         }
 
         done.set(i, true);
@@ -66,7 +67,7 @@ public final class EdgeReorderer {
                 ICoord leftPoint = (criterion == Vertex.class) ? edge.get_leftVertex() : edge.get_leftSite();
                 ICoord rightPoint = (criterion == Vertex.class) ? edge.get_rightVertex() : edge.get_rightSite();
                 if (leftPoint == Vertex.VERTEX_AT_INFINITY || rightPoint == Vertex.VERTEX_AT_INFINITY) {
-                    return new ArrayList();
+                    return Collections.emptyList();
                 }
                 if (leftPoint == lastPoint) {
                     lastPoint = rightPoint;

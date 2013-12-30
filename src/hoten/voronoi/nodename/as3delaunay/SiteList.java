@@ -3,15 +3,15 @@ package hoten.voronoi.nodename.as3delaunay;
 import hoten.geom.Point;
 import hoten.geom.Rectangle;
 import java.util.ArrayList;
+import java.util.List;
 
 public final class SiteList implements IDisposable {
 
-    private ArrayList<Site> _sites;
+    private final List<Site> _sites = new ArrayList<>();
     private int _currentIndex;
     private boolean _sorted;
 
     public SiteList() {
-        _sites = new ArrayList();
         _sorted = false;
     }
 
@@ -22,7 +22,6 @@ public final class SiteList implements IDisposable {
                 site.dispose();
             }
             _sites.clear();
-            _sites = null;
         }
     }
 
@@ -83,8 +82,8 @@ public final class SiteList implements IDisposable {
      }
      return colors;
      }*/
-    public ArrayList<Point> siteCoords() {
-        ArrayList<Point> coords = new ArrayList();
+    public List<Point> siteCoords() {
+        List<Point> coords = new ArrayList<>();
         for (Site site : _sites) {
             coords.add(site.get_coord());
         }
@@ -97,8 +96,8 @@ public final class SiteList implements IDisposable {
      * if the region is infinite, return a circle of radius 0.
      *
      */
-    public ArrayList<Circle> circles() {
-        ArrayList<Circle> circles = new ArrayList();
+    public List<Circle> circles() {
+        List<Circle> circles = new ArrayList<>();
         for (Site site : _sites) {
             double radius = 0;
             Edge nearestEdge = site.nearestEdge();
@@ -112,8 +111,8 @@ public final class SiteList implements IDisposable {
         return circles;
     }
 
-    public ArrayList<ArrayList<Point>> regions(Rectangle plotBounds) {
-        ArrayList<ArrayList<Point>> regions = new ArrayList();
+    public List<List<Point>> regions(Rectangle plotBounds) {
+        List<List<Point>> regions = new ArrayList<>();
         for (Site site : _sites) {
             regions.add(site.region(plotBounds));
         }
