@@ -5,7 +5,7 @@ public enum LR {
     LEFT,
     RIGHT;
 
-    public static LR other(LR leftRight) {
-        return leftRight == LEFT ? RIGHT : LEFT;
+    public LR other() {
+        return this == LEFT ? RIGHT : LEFT;
     }
 }

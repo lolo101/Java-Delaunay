@@ -203,7 +203,7 @@ public final class Site implements ICoord {
         edge = _edges.get(i);
         LR orientation = _edgeOrientations.get(i);
         points.add(edge.get_clippedEnds().get(orientation));
-        points.add(edge.get_clippedEnds().get((LR.other(orientation))));
+        points.add(edge.get_clippedEnds().get((orientation.other())));
 
         for (int j = i + 1; j < n; ++j) {
             edge = _edges.get(j);
@@ -313,7 +313,7 @@ public final class Site implements ICoord {
             }
             points.add(newPoint);
         }
-        Point newRightPoint = newEdge.get_clippedEnds().get(LR.other(newOrientation));
+        Point newRightPoint = newEdge.get_clippedEnds().get(newOrientation.other());
         if (!closeEnough(points.get(0), newRightPoint)) {
             points.add(newRightPoint);
         }

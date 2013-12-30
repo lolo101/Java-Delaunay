@@ -364,7 +364,7 @@ public final class Voronoi {
                 bisector = Halfedge.create(edge, leftRight);
                 halfEdges.add(bisector);
                 edgeList.insert(llbnd, bisector);
-                edge.setVertex(LR.other(leftRight), v);
+                edge.setVertex(leftRight.other(), v);
                 if ((vertex = Vertex.intersect(llbnd, bisector)) != null) {
                     vertices.add(vertex);
                     heap.remove(llbnd);
@@ -418,7 +418,7 @@ public final class Voronoi {
         if (edge == null) {
             return bottomMostSite;
         }
-        return edge.site(LR.other(he.leftRight));
+        return edge.site(he.leftRight.other());
     }
 
     public static int compareByYThenX(Site s1, Site s2) {
