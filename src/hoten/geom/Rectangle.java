@@ -6,6 +6,34 @@ package hoten.geom;
  * @author Connor
  */
 public class Rectangle {
+    public static final int LEFT = 4;
+    public static final int BOTTOM = 2;
+    public static final int RIGHT = 8;
+    public static final int TOP = 1;
+
+    /**
+     *
+     *
+     * @param point
+     * @return an int with the appropriate bits set if the Point lies on the
+     * corresponding bounds lines
+     */
+    public int check(Point point) {
+        int value = 0;
+        if (point.x == left) {
+            value |= LEFT;
+        }
+        if (point.x == right) {
+            value |= RIGHT;
+        }
+        if (point.y == top) {
+            value |= TOP;
+        }
+        if (point.y == bottom) {
+            value |= BOTTOM;
+        }
+        return value;
+    }
 
     final public double x, y, width, height, right, bottom, left, top;
 
@@ -27,9 +55,6 @@ public class Rectangle {
     }
 
     public boolean inBounds(double x0, double y0) {
-        if (x0 < x || x0 > right || y0 < y || y0 > bottom) {
-            return false;
-        }
-        return true;
+        return !(x0 < x || x0 > right || y0 < y || y0 > bottom);
     }
 }

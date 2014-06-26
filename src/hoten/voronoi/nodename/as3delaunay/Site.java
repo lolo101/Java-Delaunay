@@ -223,18 +223,18 @@ public final class Site implements ICoord {
                 // (NOTE this will not be correct if the region should take up more than
                 // half of the bounds rect, for then we will have gone the wrong way
                 // around the bounds and included the smaller part rather than the larger)
-                int rightCheck = BoundsCheck.check(rightPoint, bounds);
-                int newCheck = BoundsCheck.check(newPoint, bounds);
+                int rightCheck = bounds.check(rightPoint);
+                int newCheck = bounds.check(newPoint);
                 double px, py;
-                if ((rightCheck & BoundsCheck.RIGHT) != 0) {
+                if ((rightCheck & Rectangle.RIGHT) != 0) {
                     px = bounds.right;
-                    if ((newCheck & BoundsCheck.BOTTOM) != 0) {
+                    if ((newCheck & Rectangle.BOTTOM) != 0) {
                         py = bounds.bottom;
                         points.add(new Point(px, py));
-                    } else if ((newCheck & BoundsCheck.TOP) != 0) {
+                    } else if ((newCheck & Rectangle.TOP) != 0) {
                         py = bounds.top;
                         points.add(new Point(px, py));
-                    } else if ((newCheck & BoundsCheck.LEFT) != 0) {
+                    } else if ((newCheck & Rectangle.LEFT) != 0) {
                         if (rightPoint.y - bounds.y + newPoint.y - bounds.y < bounds.height) {
                             py = bounds.top;
                         } else {
@@ -243,15 +243,15 @@ public final class Site implements ICoord {
                         points.add(new Point(px, py));
                         points.add(new Point(bounds.left, py));
                     }
-                } else if ((rightCheck & BoundsCheck.LEFT) != 0) {
+                } else if ((rightCheck & Rectangle.LEFT) != 0) {
                     px = bounds.left;
-                    if ((newCheck & BoundsCheck.BOTTOM) != 0) {
+                    if ((newCheck & Rectangle.BOTTOM) != 0) {
                         py = bounds.bottom;
                         points.add(new Point(px, py));
-                    } else if ((newCheck & BoundsCheck.TOP) != 0) {
+                    } else if ((newCheck & Rectangle.TOP) != 0) {
                         py = bounds.top;
                         points.add(new Point(px, py));
-                    } else if ((newCheck & BoundsCheck.RIGHT) != 0) {
+                    } else if ((newCheck & Rectangle.RIGHT) != 0) {
                         if (rightPoint.y - bounds.y + newPoint.y - bounds.y < bounds.height) {
                             py = bounds.top;
                         } else {
@@ -260,15 +260,15 @@ public final class Site implements ICoord {
                         points.add(new Point(px, py));
                         points.add(new Point(bounds.right, py));
                     }
-                } else if ((rightCheck & BoundsCheck.TOP) != 0) {
+                } else if ((rightCheck & Rectangle.TOP) != 0) {
                     py = bounds.top;
-                    if ((newCheck & BoundsCheck.RIGHT) != 0) {
+                    if ((newCheck & Rectangle.RIGHT) != 0) {
                         px = bounds.right;
                         points.add(new Point(px, py));
-                    } else if ((newCheck & BoundsCheck.LEFT) != 0) {
+                    } else if ((newCheck & Rectangle.LEFT) != 0) {
                         px = bounds.left;
                         points.add(new Point(px, py));
-                    } else if ((newCheck & BoundsCheck.BOTTOM) != 0) {
+                    } else if ((newCheck & Rectangle.BOTTOM) != 0) {
                         if (rightPoint.x - bounds.x + newPoint.x - bounds.x < bounds.width) {
                             px = bounds.left;
                         } else {
@@ -277,15 +277,15 @@ public final class Site implements ICoord {
                         points.add(new Point(px, py));
                         points.add(new Point(px, bounds.bottom));
                     }
-                } else if ((rightCheck & BoundsCheck.BOTTOM) != 0) {
+                } else if ((rightCheck & Rectangle.BOTTOM) != 0) {
                     py = bounds.bottom;
-                    if ((newCheck & BoundsCheck.RIGHT) != 0) {
+                    if ((newCheck & Rectangle.RIGHT) != 0) {
                         px = bounds.right;
                         points.add(new Point(px, py));
-                    } else if ((newCheck & BoundsCheck.LEFT) != 0) {
+                    } else if ((newCheck & Rectangle.LEFT) != 0) {
                         px = bounds.left;
                         points.add(new Point(px, py));
-                    } else if ((newCheck & BoundsCheck.TOP) != 0) {
+                    } else if ((newCheck & Rectangle.TOP) != 0) {
                         if (rightPoint.x - bounds.x + newPoint.x - bounds.x < bounds.width) {
                             px = bounds.left;
                         } else {
@@ -318,42 +318,5 @@ public final class Site implements ICoord {
 
     public double dist(ICoord p) {
         return Point.distance(p.get_coord(), this._coord);
-    }
-}
-
-final class BoundsCheck {
-
-    final public static int TOP = 1;
-    final public static int BOTTOM = 2;
-    final public static int LEFT = 4;
-    final public static int RIGHT = 8;
-
-    /**
-     *
-     * @param point
-     * @param bounds
-     * @return an int with the appropriate bits set if the Point lies on the
-     * corresponding bounds lines
-     *
-     */
-    public static int check(Point point, Rectangle bounds) {
-        int value = 0;
-        if (point.x == bounds.left) {
-            value |= LEFT;
-        }
-        if (point.x == bounds.right) {
-            value |= RIGHT;
-        }
-        if (point.y == bounds.top) {
-            value |= TOP;
-        }
-        if (point.y == bounds.bottom) {
-            value |= BOTTOM;
-        }
-        return value;
-    }
-
-    private BoundsCheck() {
-        throw new Error("BoundsCheck constructor unused");
     }
 }
