@@ -5,7 +5,6 @@ import hoten.geom.Rectangle;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 
@@ -23,12 +22,7 @@ public final class Site implements ICoord {
 
     public static void sortSites(List<Site> sites) {
         //sites.sort(Site.compare);
-        Collections.sort(sites, new Comparator<Site>() {
-            @Override
-            public int compare(Site o1, Site o2) {
-                return (int) Site.compare(o1, o2);
-            }
-        });
+        Collections.sort(sites, Site::compare);
     }
 
     /**
@@ -39,7 +33,7 @@ public final class Site implements ICoord {
      * haha "also" - means more than one responsibility...
      *
      */
-    private static double compare(Site s1, Site s2) {
+    private static int compare(Site s1, Site s2) {
         int returnValue = Voronoi.compareByYThenX(s1, s2);
 
         // swap _siteIndex values if necessary to match new ordering:
@@ -131,12 +125,7 @@ public final class Site implements ICoord {
 
     public Edge nearestEdge() {
         // _edges.sort(Edge.compareSitesDistances);
-        Collections.sort(_edges, new Comparator<Edge>() {
-            @Override
-            public int compare(Edge o1, Edge o2) {
-                return (int) Edge.compareSitesDistances(o1, o2);
-            }
-        });
+        Collections.sort(_edges, Edge::compareSitesDistances);
         return _edges.get(0);
     }
 

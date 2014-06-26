@@ -15,7 +15,7 @@ import java.util.Stack;
  */
 public final class Edge {
 
-    final private static Stack<Edge> _pool = new Stack();
+    final private static Stack<Edge> _pool = new Stack<Edge>();
 
     /**
      * This is the only way to create a new Edge
@@ -161,7 +161,7 @@ public final class Edge {
         return Point.distance(get_leftSite().get_coord(), get_rightSite().get_coord());
     }
 
-    public static double compareSitesDistances_MAX(Edge edge0, Edge edge1) {
+    public static int compareSitesDistances_MAX(Edge edge0, Edge edge1) {
         double length0 = edge0.sitesDistance();
         double length1 = edge1.sitesDistance();
         if (length0 < length1) {
@@ -173,7 +173,7 @@ public final class Edge {
         return 0;
     }
 
-    public static double compareSitesDistances(Edge edge0, Edge edge1) {
+    public static int compareSitesDistances(Edge edge0, Edge edge1) {
         return -compareSitesDistances_MAX(edge0, edge1);
     }
     // Once clipVertices() is called, this Dictionary will hold two Points
@@ -240,6 +240,7 @@ public final class Edge {
         _sites = new HashMap();
     }
 
+    @Override
     public String toString() {
         return "Edge " + _edgeIndex + "; sites " + _sites.get(LR.LEFT) + ", " + _sites.get(LR.RIGHT)
                 + "; endVertices " + (_leftVertex != null ? _leftVertex.get_vertexIndex() : "null") + ", "

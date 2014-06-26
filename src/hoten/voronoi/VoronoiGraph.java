@@ -9,13 +9,16 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import static java.util.Collections.sort;
+import static java.util.Comparator.comparing;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import static java.util.stream.Collectors.averagingDouble;
+import static java.util.stream.Collectors.minBy;
+import static java.util.stream.Collectors.toList;
 
 /**
  * VoronoiGraph.java
@@ -96,23 +99,12 @@ public abstract class VoronoiGraph {
                 newP[c.index] = new Point(x / c.touches.size(), y / c.touches.size());
             }
         }
-        for (Corner c : corners) {
-            c.loc = newP[c.index];
-        }
-        for (Edge e : edges) {
-            if (e.v0 != null && e.v1 != null) {
-                e.setVornoi(e.v0, e.v1);
-            }
-        }
+        corners.stream().forEach(c -> c.loc = newP[c.index]);
+        edges.stream().filter(e -> e.v0 != null && e.v1 != null).forEach(e -> e.setVornoi(e.v0, e.v1));
     }
 
     private Edge edgeWithCenters(Center c1, Center c2) {
-        for (Edge e : c1.borders) {
-            if (e.d0 == c2 || e.d1 == c2) {
-                return e;
-            }
-        }
-        return null;
+        return c1.borders.stream().filter(e -> e.d0 == c2 || e.d1 == c2).findFirst().orElse(null);
     }
 
     private void drawTriangle(Graphics2D g, Corner c1, Corner c2, Center center) {
@@ -231,16 +223,12 @@ public abstract class VoronoiGraph {
 
         if (drawSites) {
             g.setColor(Color.BLACK);
-            for (Center s : centers) {
-                g.fillOval((int) (s.loc.x - 2), (int) (s.loc.y - 2), 4, 4);
-            }
+            centers.stream().forEach(s -> g.fillOval((int) (s.loc.x - 2), (int) (s.loc.y - 2), 4, 4));
         }
 
         if (drawCorners) {
             g.setColor(Color.WHITE);
-            for (Corner c : corners) {
-                g.fillOval((int) (c.loc.x - 2), (int) (c.loc.y - 2), 4, 4);
-            }
+            corners.stream().forEach(c -> g.fillOval((int) (c.loc.x - 2), (int) (c.loc.y - 2), 4, 4));
         }
         g.setColor(Color.WHITE);
         g.drawRect((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height);
@@ -472,27 +460,11 @@ public abstract class VoronoiGraph {
     }
 
     private List<Corner> landCorners() {
-        final List<Corner> list = new ArrayList<>();
-        for (Corner c : corners) {
-            if (!c.ocean && !c.coast) {
-                list.add(c);
-            }
-        }
-        return list;
+        return corners.stream().filter(c -> !c.ocean && !c.coast).collect(toList());
     }
 
     private void redistributeElevations(List<Corner> landCorners) {
-        Collections.sort(landCorners, new Comparator<Corner>() {
-            @Override
-            public int compare(Corner o1, Corner o2) {
-                if (o1.elevation > o2.elevation) {
-                    return 1;
-                } else if (o1.elevation < o2.elevation) {
-                    return -1;
-                }
-                return 0;
-            }
-        });
+        sort(landCorners, comparing(c -> c.elevation));
 
         final double SCALE_FACTOR = 1.1;
         for (int i = 0; i < landCorners.size(); i++) {
@@ -502,35 +474,15 @@ public abstract class VoronoiGraph {
             landCorners.get(i).elevation = x;
         }
 
-        for (Corner c : corners) {
-            if (c.ocean || c.coast) {
-                c.elevation = 0.0;
-            }
-        }
+        corners.stream().filter(c -> c.ocean || c.coast).forEach(c -> c.elevation = 0.0);
     }
 
     private void assignPolygonElevations() {
-        for (Center center : centers) {
-            double total = 0;
-            for (Corner c : center.corners) {
-                total += c.elevation;
-            }
-            center.elevation = total / center.corners.size();
-        }
+        centers.stream().forEach(ce -> ce.elevation = ce.corners.stream().collect(averagingDouble(co -> co.elevation)));
     }
 
     private void calculateDownslopes() {
-        for (Corner c : corners) {
-            Corner down = c;
-            //System.out.println("ME: " + c.elevation);
-            for (Corner a : c.adjacent) {
-                //System.out.println(a.elevation);
-                if (a.elevation <= down.elevation) {
-                    down = a;
-                }
-            }
-            c.downslope = down;
-        }
+        corners.forEach(c -> c.downslope = c.adjacent.stream().collect(minBy(comparing(adj -> adj.elevation))).get());
     }
 
     private void createRivers() {
@@ -556,12 +508,7 @@ public abstract class VoronoiGraph {
     }
 
     private Edge lookupEdgeFromCorner(Corner c, Corner downslope) {
-        for (Edge e : c.protrudes) {
-            if (e.v0 == downslope || e.v1 == downslope) {
-                return e;
-            }
-        }
-        return null;
+        return c.protrudes.stream().filter(e -> e.v0 == downslope || e.v1 == downslope).findFirst().orElse(null);
     }
 
     private void assignCornerMoisture() {
@@ -586,44 +533,21 @@ public abstract class VoronoiGraph {
             }
         }
 
-        // Salt water
-        for (Corner c : corners) {
-            if (c.ocean || c.coast) {
-                c.moisture = 1.0;
-            }
-        }
+        corners.stream().filter(c -> c.ocean || c.coast).forEach(c -> c.moisture = 1.0);
     }
 
     private void redistributeMoisture(List<Corner> landCorners) {
-        Collections.sort(landCorners, new Comparator<Corner>() {
-            @Override
-            public int compare(Corner o1, Corner o2) {
-                if (o1.moisture > o2.moisture) {
-                    return 1;
-                } else if (o1.moisture < o2.moisture) {
-                    return -1;
-                }
-                return 0;
-            }
-        });
+        sort(landCorners, comparing(c -> c.moisture));
         for (int i = 0; i < landCorners.size(); i++) {
             landCorners.get(i).moisture = (double) i / landCorners.size();
         }
     }
 
     private void assignPolygonMoisture() {
-        for (Center center : centers) {
-            double total = 0;
-            for (Corner c : center.corners) {
-                total += c.moisture;
-            }
-            center.moisture = total / center.corners.size();
-        }
+        centers.stream().forEach(ce -> ce.moisture = ce.corners.stream().collect(averagingDouble(co -> co.moisture)));
     }
 
     private void assignBiomes() {
-        for (Center center : centers) {
-            center.biome = getBiome(center);
-        }
+        centers.stream().forEach(center -> center.biome = getBiome(center));
     }
 }
