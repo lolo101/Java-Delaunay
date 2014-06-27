@@ -34,7 +34,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import static java.util.Map.Entry.comparingByKey;
 import java.util.Random;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public final class Voronoi {
 
@@ -124,6 +128,11 @@ public final class Voronoi {
         return _edges;
     }
 
+    /**
+     * Returns the region of the site specified by the site's exact coordinates.
+     * @param p
+     * @return
+     */
     public List<Point> region(Point p) {
         Site site = _sitesIndexedByLocation.get(p);
         if (site == null) {
@@ -134,16 +143,12 @@ public final class Voronoi {
 
     // TODO: bug: if you call this before you call region(), something goes wrong :(
     public List<Point> neighborSitesForSite(Point coord) {
-        List<Point> points = new ArrayList<>();
         Site site = _sitesIndexedByLocation.get(coord);
         if (site == null) {
-            return points;
+            return Collections.emptyList();
         }
         List<Site> sites = site.neighborSites();
-        for (Site neighbor : sites) {
-            points.add(neighbor.get_coord());
-        }
-        return points;
+        return sites.stream().map(Site::get_coord).collect(toList());
     }
 
     public List<Circle> circles() {
@@ -183,13 +188,7 @@ public final class Voronoi {
     }
 
     private List<LineSegment> delaunayLinesForEdges(List<Edge> edges) {
-        List<LineSegment> segments = new ArrayList<>();
-
-        for (Edge edge : edges) {
-            segments.add(edge.delaunayLine());
-        }
-
-        return segments;
+        return edges.stream().map(Edge::delaunayLine).collect(toList());
     }
 
     public List<LineSegment> voronoiBoundaryForSite(Point coord) {
@@ -451,5 +450,15 @@ public final class Voronoi {
             return 1;
         }
         return 0;
+    }
+
+    /**
+     * Returns the closest site from the specified point.
+     * @param p an arbitraty point in the plan.
+     * @return the closest site from {@code p}.
+     */
+    public Point closestSite(Point p) {
+        return _sites.siteCoords().stream().collect(toMap(s -> hoten.geom.Point.distance(s, p), identity()))
+                .entrySet().stream().sorted(comparingByKey()).findFirst().get().getValue();
     }
 }
