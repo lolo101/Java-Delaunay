@@ -4,6 +4,7 @@ import hoten.geom.Point;
 import hoten.geom.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
+import static java.util.stream.Collectors.toList;
 
 public final class SiteList implements IDisposable {
 
@@ -17,14 +18,15 @@ public final class SiteList implements IDisposable {
 
     @Override
     public void dispose() {
-        if (_sites != null) {
-            for (Site site : _sites) {
-                site.dispose();
-            }
-            _sites.clear();
-        }
+        _sites.stream().forEach(Site::dispose);
+        _sites.clear();
     }
 
+    /**
+     * Add a new site to this list.
+     * @param site
+     * @return
+     */
     public int push(Site site) {
         _sorted = false;
         _sites.add(site);
@@ -83,11 +85,7 @@ public final class SiteList implements IDisposable {
      return colors;
      }*/
     public List<Point> siteCoords() {
-        List<Point> coords = new ArrayList<>();
-        for (Site site : _sites) {
-            coords.add(site.get_coord());
-        }
-        return coords;
+        return _sites.stream().map(Site::get_coord).collect(toList());
     }
 
     /**
@@ -112,11 +110,7 @@ public final class SiteList implements IDisposable {
     }
 
     public List<List<Point>> regions(Rectangle plotBounds) {
-        List<List<Point>> regions = new ArrayList<>();
-        for (Site site : _sites) {
-            regions.add(site.region(plotBounds));
-        }
-        return regions;
+        return _sites.stream().map(site -> site.region(plotBounds)).collect(toList());
     }
     /**
      *

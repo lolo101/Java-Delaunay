@@ -180,7 +180,6 @@ public final class Site implements ICoord {
         List<Point> points = new ArrayList<>();
         int n = _edges.size();
         int i = 0;
-        Edge edge;
         while (i < n && (_edges.get(i).get_visible() == false)) {
             ++i;
         }
@@ -189,10 +188,10 @@ public final class Site implements ICoord {
             // no edges visible
             return Collections.emptyList();
         }
-        edge = _edges.get(i);
+        Edge edge = _edges.get(i);
         LR orientation = _edgeOrientations.get(i);
         points.add(edge.get_clippedEnds().get(orientation));
-        points.add(edge.get_clippedEnds().get((orientation.other())));
+        points.add(edge.get_clippedEnds().get(orientation.other()));
 
         for (int j = i + 1; j < n; ++j) {
             edge = _edges.get(j);
