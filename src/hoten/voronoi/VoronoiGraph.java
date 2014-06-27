@@ -238,8 +238,7 @@ public abstract class VoronoiGraph {
         final Map<Point, Center> pointCenterMap = new HashMap<>();
         final List<Point> points = v.siteCoords();
         for (Point p : points) {
-            Center c = new Center();
-            c.loc = p;
+            Center c = new Center(p);
             c.index = centers.size();
             centers.add(c);
             pointCenterMap.put(p, c);

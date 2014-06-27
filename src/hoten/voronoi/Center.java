@@ -12,7 +12,7 @@ import java.util.List;
 public class Center {
 
     public int index;
-    public Point loc;
+    public final Point loc;
     public final List<Corner> corners = new ArrayList<>();//good
     public final List<Center> neighbors = new ArrayList<>();//good
     public final List<Edge> borders = new ArrayList<>();
@@ -21,9 +21,6 @@ public class Center {
     public double moisture;
     public Enum biome;
     public double area;
-
-    public Center() {
-    }
 
     public Center(Point loc) {
         this.loc = loc;
