@@ -1,18 +1,17 @@
 package test;
 
-import hoten.voronoi.nodename.as3delaunay.Voronoi;
+import hoten.voronoi.VoronoiGraph;
 import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ItemListener;
-import java.util.Random;
 import javax.swing.JPanel;
 
 public class TestPanel extends JPanel {
 
-    private final TestGraphImpl graph;
+    private final VoronoiGraph graph;
     private final Checkbox cbBiomes = new Checkbox("Biomes");
     private final Checkbox cbRivers = new Checkbox("Rivers");
     private final Checkbox cbSites = new Checkbox("Sites");
@@ -37,9 +36,8 @@ public class TestPanel extends JPanel {
 
     private final ItemListener repainter = e -> mainPanel.repaint();
 
-    TestPanel(Voronoi v) {
-        //assemble the voronoi strucutre into a usable graph object representing a map
-        this.graph = new TestGraphImpl(v, 2, new Random());
+    TestPanel(VoronoiGraph graph) {
+        this.graph = graph;
 
         setLayout(new BorderLayout());
         JPanel buttonPanel = new JPanel();
@@ -55,7 +53,7 @@ public class TestPanel extends JPanel {
         
         // Main
         mainPanel.setPreferredSize(new Dimension((int) graph.bounds.width, (int) graph.bounds.height));
-        mainPanel.addMouseListener(new TestMouseListener(v));
+        mainPanel.addMouseListener(new TestMouseListener(graph));
         add(mainPanel);
         
         cbBiomes.addItemListener(repainter);

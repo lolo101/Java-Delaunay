@@ -32,13 +32,12 @@ import hoten.geom.Rectangle;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
+import static java.util.Comparator.naturalOrder;
 import java.util.HashMap;
 import java.util.List;
-import static java.util.Map.Entry.comparingByKey;
 import java.util.Random;
-import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.maxBy;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 public final class Voronoi {
 
@@ -84,18 +83,13 @@ public final class Voronoi {
     }
 
     public Voronoi(List<Point> points, List<Color> colors) {
-        double maxWidth = 0, maxHeight = 0;
-        for (Point p : points) {
-            maxWidth = Math.max(maxWidth, p.x);
-            maxHeight = Math.max(maxHeight, p.y);
-        }
-        System.out.println(maxWidth + "," + maxHeight);
-        init(points, colors, new Rectangle(0, 0, maxWidth, maxHeight));
-        fortunesAlgorithm();
+        this(points, colors, new Rectangle(0, 0,
+                points.stream().map(p -> p.x).collect(maxBy(naturalOrder())).get(),
+                points.stream().map(p -> p.y).collect(maxBy(naturalOrder())).get()));
     }
 
     public Voronoi(int numSites, double maxWidth, double maxHeight, Random r, List<Color> colors) {
-        List<Point> points = new ArrayList<>();
+        List<Point> points = new ArrayList<>(numSites);
         for (int i = 0; i < numSites; i++) {
             points.add(new Point(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight));
         }
@@ -262,7 +256,6 @@ public final class Voronoi {
         Site newSite, bottomSite, topSite, tempSite;
         Vertex v, vertex;
         Point newintstar = null;
-        LR leftRight;
         Halfedge lbnd, rbnd, llbnd, rrbnd, bisector;
         Edge edge;
 
@@ -351,7 +344,7 @@ public final class Voronoi {
                 edgeList.remove(lbnd);
                 heap.remove(rbnd);
                 edgeList.remove(rbnd);
-                leftRight = LR.LEFT;
+                LR leftRight = LR.LEFT;
                 if (bottomSite.get_y() > topSite.get_y()) {
                     tempSite = bottomSite;
                     bottomSite = topSite;
@@ -450,15 +443,5 @@ public final class Voronoi {
             return 1;
         }
         return 0;
-    }
-
-    /**
-     * Returns the closest site from the specified point.
-     * @param p an arbitraty point in the plan.
-     * @return the closest site from {@code p}.
-     */
-    public Point closestSite(Point p) {
-        return _sites.siteCoords().stream().collect(toMap(s -> hoten.geom.Point.distance(s, p), identity()))
-                .entrySet().stream().sorted(comparingByKey()).findFirst().get().getValue();
     }
 }

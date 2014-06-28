@@ -1,5 +1,6 @@
 package test;
 
+import hoten.voronoi.VoronoiGraph;
 import hoten.voronoi.nodename.as3delaunay.Voronoi;
 import java.util.Random;
 import javax.swing.JFrame;
@@ -23,11 +24,13 @@ public class TestDriver {
 
         //make the intial underlying voronoi structure
         final Voronoi v = new Voronoi(numSites, width, height, r, null);
+        //assemble the voronoi strucutre into a usable graph object representing a map
+        VoronoiGraph graph = new TestGraphImpl(v, 2, new Random());
 
         SwingUtilities.invokeLater(() -> {
             final JFrame frame = new JFrame("java fortune");
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            frame.add(new TestPanel(v));
+            frame.add(new TestPanel(graph));
             frame.pack();
             frame.setVisible(true);
         });
