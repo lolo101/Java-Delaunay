@@ -7,7 +7,6 @@ import hoten.voronoi.nodename.as3delaunay.Voronoi;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import static java.util.Collections.sort;
 import static java.util.Comparator.comparing;
@@ -15,10 +14,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import static java.util.Map.Entry.comparingByKey;
 import java.util.Random;
+import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.averagingDouble;
 import static java.util.stream.Collectors.minBy;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * VoronoiGraph.java
@@ -32,7 +34,6 @@ public abstract class VoronoiGraph {
     final public List<Center> centers = new ArrayList<>();
     final public Rectangle bounds;
     final private Random r;
-    public BufferedImage img;
     protected Color OCEAN, RIVER, LAKE, BEACH;
 
     public VoronoiGraph(Voronoi v, int numLloydRelaxations, Random r) {
@@ -46,16 +47,8 @@ public abstract class VoronoiGraph {
             List<Point> points = v.siteCoords();
             for (Point p : points) {
                 List<Point> region = v.region(p);
-                double x = 0;
-                double y = 0;
-                for (Point c : region) {
-                    x += c.x;
-                    y += c.y;
-                }
-                x /= region.size();
-                y /= region.size();
-                p.x = x;
-                p.y = y;
+                p.x = region.stream().collect(averagingDouble(c -> c.x));
+                p.y = region.stream().collect(averagingDouble(c -> c.y));
             }
             v = new Voronoi(points, null, v.get_plotBounds());
         }
@@ -80,8 +73,9 @@ public abstract class VoronoiGraph {
 
     abstract protected Color getColor(Enum biome);
 
-    public Center getCenterOf(int x, int y) {
-        return centers.get(img.getRGB(x, y) & 0xffffff);
+    public Center getCenterOf(Point p) {
+        return centers.stream().collect(toMap(c -> Point.distance(c.loc, p), identity()))
+                .entrySet().stream().sorted(comparingByKey()).findFirst().get().getValue();
     }
 
     private void improveCorners() {

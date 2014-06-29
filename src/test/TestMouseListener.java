@@ -2,15 +2,13 @@ package test;
 
 import hoten.geom.Point;
 import hoten.voronoi.Center;
-import hoten.voronoi.Corner;
+import hoten.voronoi.Edge;
 import hoten.voronoi.VoronoiGraph;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.Polygon;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
 
 
 class TestMouseListener extends MouseAdapter {
@@ -26,22 +24,20 @@ class TestMouseListener extends MouseAdapter {
     public void mouseClicked(MouseEvent e) {
         java.awt.Point location = e.getPoint();
         Point p = new Point(location.x, location.y);
-        Center center = v.getCenterOf((int) p.x, (int) p.y);
-        List<Corner> corners = center.corners;
-        drawRegion(e, corners);
+        Center center = v.getCenterOf(p);
+        drawRegion(e.getComponent(), center);
     }
 
-    private void drawRegion(MouseEvent e, List<Corner> corners) {
-        Component component = (Component) e.getSource();
+    private static void drawRegion(Component component, Center center) {
         Graphics graphics = component.getGraphics();
         graphics.setColor(TRANSPARENT_WHITE);
-        graphics.fillPolygon(asAwtPolygon(corners));
+        center.borders.forEach(e -> drawTriangle(graphics, center, e));
         graphics.dispose();
     }
 
-    private Polygon asAwtPolygon(List<Corner> corners) {
-        Polygon poly = new Polygon();
-        corners.forEach(c -> poly.addPoint((int) c.loc.x, (int) c.loc.y));
-        return poly;
+    private static void drawTriangle(Graphics graphics, Center c, Edge e) {
+        int[] xs = {(int) c.loc.x, (int) e.v0.loc.x, (int) e.v1.loc.x};
+        int[] ys = {(int) c.loc.y, (int) e.v0.loc.y, (int) e.v1.loc.y};
+        graphics.fillPolygon(xs, ys, 3);
     }
 }
