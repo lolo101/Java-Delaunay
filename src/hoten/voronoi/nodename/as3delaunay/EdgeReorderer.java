@@ -35,17 +35,16 @@ public final class EdgeReorderer {
 
     private List<Edge> reorderEdges(List<Edge> origEdges, Class<?> criterion) {
         int n = origEdges.size();
-        Edge edge;
         // we're going to reorder the edges in order of traversal
         List<Boolean> done = new ArrayList<>(n);
         int nDone = 0;
         for (int k = 0; k < n; k++) {
             done.add( false);
         }
-        List<Edge> newEdges = new ArrayList<>();
+        List<Edge> newEdges = new ArrayList<>(n);
 
         int i = 0;
-        edge = origEdges.get(i);
+        Edge edge = origEdges.get(i);
         newEdges.add(edge);
         _edgeOrientations.add(LR.LEFT);
         ICoord firstPoint = (criterion == Vertex.class) ? edge.get_leftVertex() : edge.get_leftSite();

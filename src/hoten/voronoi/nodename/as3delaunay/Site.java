@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
+import static java.util.stream.Collectors.toList;
 
 public final class Site implements ICoord {
 
@@ -93,11 +94,6 @@ public final class Site implements ICoord {
         return "Site " + _siteIndex + ": " + get_coord();
     }
 
-    private void move(Point p) {
-        clear();
-        _coord = p;
-    }
-
     public void dispose() {
         _coord = null;
         clear();
@@ -136,11 +132,7 @@ public final class Site implements ICoord {
         if (_edgeOrientations == null) {
             reorderEdges();
         }
-        List<Site> list = new ArrayList<>();
-        for (Edge edge : _edges) {
-            list.add(neighborSite(edge));
-        }
-        return list;
+        return _edges.stream().map(e -> neighborSite(e)).collect(toList());
     }
 
     private Site neighborSite(Edge edge) {

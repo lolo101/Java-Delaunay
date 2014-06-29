@@ -27,14 +27,12 @@ public final class Polygon {
     }
 
     private double signedDoubleArea() {
-        int index, nextIndex;
         int n = _vertices.size();
-        Point point, next;
         double signedDoubleArea = 0;
-        for (index = 0; index < n; ++index) {
-            nextIndex = (index + 1) % n;
-            point = _vertices.get(index);
-            next = _vertices.get(nextIndex);
+        for (int index = 0; index < n; ++index) {
+            int nextIndex = (index + 1) % n;
+            Point point = _vertices.get(index);
+            Point next = _vertices.get(nextIndex);
             signedDoubleArea += point.x * next.y - next.x * point.y;
         }
         return signedDoubleArea;

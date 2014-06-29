@@ -15,7 +15,7 @@ import java.util.Stack;
  */
 public final class Edge {
 
-    final private static Stack<Edge> _pool = new Stack<Edge>();
+    final private static Stack<Edge> _pool = new Stack<>();
 
     /**
      * This is the only way to create a new Edge
@@ -132,20 +132,20 @@ public final class Edge {
     //		(if one of them is null, the edge extends to infinity)
     private Vertex _leftVertex;
 
-    public Vertex get_leftVertex() {
+    Vertex get_leftVertex() {
         return _leftVertex;
     }
     private Vertex _rightVertex;
 
-    public Vertex get_rightVertex() {
+    Vertex get_rightVertex() {
         return _rightVertex;
     }
 
-    public Vertex vertex(LR leftRight) {
+    Vertex vertex(LR leftRight) {
         return (leftRight == LR.LEFT) ? _leftVertex : _rightVertex;
     }
 
-    public void setVertex(LR leftRight, Vertex v) {
+    void setVertex(LR leftRight, Vertex v) {
         if (leftRight == LR.LEFT) {
             _leftVertex = v;
         } else {
@@ -237,7 +237,7 @@ public final class Edge {
     }
 
     private void init() {
-        _sites = new HashMap();
+        _sites = new HashMap<>();
     }
 
     @Override
@@ -350,7 +350,7 @@ public final class Edge {
             }
         }
 
-        _clippedVertices = new HashMap();
+        _clippedVertices = new HashMap<>();
         if (vertex0 == _leftVertex) {
             _clippedVertices.put(LR.LEFT, new Point(x0, y0));
             _clippedVertices.put(LR.RIGHT, new Point(x1, y1));
