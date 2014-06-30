@@ -202,27 +202,35 @@ public abstract class VoronoiGraph {
             }
         }
 
-        for (Edge e : edges) {
-            if (drawDelaunay) {
-                g.setStroke(new BasicStroke(1));
-                g.setColor(Color.YELLOW);
-                g.drawLine((int) e.d0.loc.x, (int) e.d0.loc.y, (int) e.d1.loc.x, (int) e.d1.loc.y);
-            }
-            if (drawRivers && e.river > 0) {
+        if (drawDelaunay) {
+            g.setStroke(new BasicStroke(1));
+            g.setColor(Color.YELLOW);
+            edges.forEach(e -> g.drawLine((int) e.d0.loc.x, (int) e.d0.loc.y, (int) e.d1.loc.x, (int) e.d1.loc.y));
+        }
+
+        if (drawVoronoi) {
+            g.setStroke(new BasicStroke(1));
+            g.setColor(Color.MAGENTA);
+            edges.stream().filter(e -> e.v0 != null && e.v1 != null)
+                    .forEach(e -> g.drawLine((int) e.v0.loc.x, (int) e.v0.loc.y, (int) e.v1.loc.x, (int) e.v1.loc.y));
+        }
+
+        if (drawRivers) {
+            g.setColor(RIVER);
+            edges.forEach(e -> {
                 g.setStroke(new BasicStroke(1 + (int) Math.sqrt(e.river * 2)));
-                g.setColor(RIVER);
-                g.drawLine((int) e.v0.loc.x, (int) e.v0.loc.y, (int) e.v1.loc.x, (int) e.v1.loc.y);
-            }
+                g.drawLine((int) e.d0.loc.x, (int) e.d0.loc.y, (int) e.d1.loc.x, (int) e.d1.loc.y);
+            });
         }
 
         if (drawSites) {
             g.setColor(Color.BLACK);
-            centers.stream().forEach(s -> g.fillOval((int) (s.loc.x - 2), (int) (s.loc.y - 2), 4, 4));
+            centers.forEach(s -> g.fillOval((int) (s.loc.x - 2), (int) (s.loc.y - 2), 4, 4));
         }
 
         if (drawCorners) {
             g.setColor(Color.WHITE);
-            corners.stream().forEach(c -> g.fillOval((int) (c.loc.x - 2), (int) (c.loc.y - 2), 4, 4));
+            corners.forEach(c -> g.fillOval((int) (c.loc.x - 2), (int) (c.loc.y - 2), 4, 4));
         }
         g.setColor(Color.WHITE);
         g.drawRect((int) bounds.x, (int) bounds.y, (int) bounds.width, (int) bounds.height);
