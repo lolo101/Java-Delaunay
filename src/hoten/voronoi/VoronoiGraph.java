@@ -217,9 +217,9 @@ public abstract class VoronoiGraph {
 
         if (drawRivers) {
             g.setColor(RIVER);
-            edges.forEach(e -> {
+            edges.stream().filter(e -> e.river > 0).forEach(e -> {
                 g.setStroke(new BasicStroke(1 + (int) Math.sqrt(e.river * 2)));
-                g.drawLine((int) e.d0.loc.x, (int) e.d0.loc.y, (int) e.d1.loc.x, (int) e.d1.loc.y);
+                g.drawLine((int) e.v0.loc.x, (int) e.v0.loc.y, (int) e.v1.loc.x, (int) e.v1.loc.y);
             });
         }
 
