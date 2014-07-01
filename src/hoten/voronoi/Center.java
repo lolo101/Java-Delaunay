@@ -1,6 +1,7 @@
 package hoten.voronoi;
 
 import hoten.geom.Point;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public class Center {
 
-    public int index;
+    public Color color;
     public final Point loc;
     public final List<Corner> corners = new ArrayList<>();//good
     public final List<Center> neighbors = new ArrayList<>();//good

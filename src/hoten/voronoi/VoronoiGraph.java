@@ -50,7 +50,7 @@ public abstract class VoronoiGraph {
                 p.x = region.stream().collect(averagingDouble(c -> c.x));
                 p.y = region.stream().collect(averagingDouble(c -> c.y));
             }
-            v = new Voronoi(points, null, v.get_plotBounds());
+            v = new Voronoi(points, v.get_plotBounds());
         }
         buildGraph(v);
         improveCorners();
@@ -123,19 +123,9 @@ public abstract class VoronoiGraph {
 
     //also records the area of each voronoi cell
     public void paint(Graphics2D g, boolean drawBiomes, boolean drawRivers, boolean drawSites, boolean drawCorners, boolean drawDelaunay, boolean drawVoronoi) {
-        final int numSites = centers.size();
-
-        Color[] defaultColors = null;
-        if (!drawBiomes) {
-            defaultColors = new Color[numSites];
-            for (int i = 0; i < defaultColors.length; i++) {
-                defaultColors[i] = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
-            }
-        }
-
         //draw via triangles
         for (Center c : centers) {
-            g.setColor(drawBiomes ? getColor(c.biome) : defaultColors[c.index]);
+            g.setColor(drawBiomes ? getColor(c.biome) : c.color);
 
             //only used if Center c is on the edge of the graph. allows for completely filling in the outer polygons
             Corner edgeCorner1 = null;
@@ -241,7 +231,7 @@ public abstract class VoronoiGraph {
         final List<Point> points = v.siteCoords();
         for (Point p : points) {
             Center c = new Center(p);
-            c.index = centers.size();
+            c.color = new Color(r.nextInt(255), r.nextInt(255), r.nextInt(255));
             centers.add(c);
             pointCenterMap.put(p, c);
         }

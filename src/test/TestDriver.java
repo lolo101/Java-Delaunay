@@ -23,7 +23,7 @@ public class TestDriver {
         System.out.println("seed: " + seed);
 
         //make the intial underlying voronoi structure
-        final Voronoi v = new Voronoi(numSites, width, height, r, null);
+        final Voronoi v = new Voronoi(numSites, width, height, r);
         //assemble the voronoi strucutre into a usable graph object representing a map
         VoronoiGraph graph = new TestGraphImpl(v, 2, new Random());
 

@@ -29,7 +29,6 @@ package hoten.voronoi.nodename.as3delaunay;
  */
 import hoten.geom.Point;
 import hoten.geom.Rectangle;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import static java.util.Comparator.naturalOrder;
@@ -77,43 +76,43 @@ public final class Voronoi {
         _sitesIndexedByLocation = null;
     }
 
-    public Voronoi(List<Point> points, List<Color> colors, Rectangle plotBounds) {
-        init(points, colors, plotBounds);
+    public Voronoi(List<Point> points, Rectangle plotBounds) {
+        init(points, plotBounds);
         fortunesAlgorithm();
     }
 
-    public Voronoi(List<Point> points, List<Color> colors) {
-        this(points, colors, new Rectangle(0, 0,
+    public Voronoi(List<Point> points) {
+        this(points, new Rectangle(0, 0,
                 points.stream().map(p -> p.x).collect(maxBy(naturalOrder())).get(),
                 points.stream().map(p -> p.y).collect(maxBy(naturalOrder())).get()));
     }
 
-    public Voronoi(int numSites, double maxWidth, double maxHeight, Random r, List<Color> colors) {
+    public Voronoi(int numSites, double maxWidth, double maxHeight, Random r) {
         List<Point> points = new ArrayList<>(numSites);
         for (int i = 0; i < numSites; i++) {
             points.add(new Point(r.nextDouble() * maxWidth, r.nextDouble() * maxHeight));
         }
-        init(points, colors, new Rectangle(0, 0, maxWidth, maxHeight));
+        init(points, new Rectangle(0, 0, maxWidth, maxHeight));
         fortunesAlgorithm();
     }
 
-    private void init(List<Point> points, List<Color> colors, Rectangle plotBounds) {
+    private void init(List<Point> points, Rectangle plotBounds) {
         _sites = new SiteList();
         _sitesIndexedByLocation = new HashMap<>();
-        addSites(points, colors);
+        addSites(points);
         _plotBounds = plotBounds;
     }
 
-    private void addSites(List<Point> points, List<Color> colors) {
+    private void addSites(List<Point> points) {
         int length = points.size();
         for (int i = 0; i < length; ++i) {
-            addSite(points.get(i), colors != null ? colors.get(i) : null, i);
+            addSite(points.get(i), i);
         }
     }
 
-    private void addSite(Point p, Color color, int index) {
+    private void addSite(Point p, int index) {
         double weight = Math.random() * 100;
-        Site site = Site.create(p, index, weight, color);
+        Site site = Site.create(p, index, weight);
         _sites.push(site);
         _sitesIndexedByLocation.put(p, site);
     }

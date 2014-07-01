@@ -2,7 +2,6 @@ package hoten.voronoi.nodename.as3delaunay;
 
 import hoten.geom.Point;
 import hoten.geom.Rectangle;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,11 +12,11 @@ public final class Site implements ICoord {
 
     private static final Stack<Site> _pool = new Stack<>();
 
-    public static Site create(Point p, int index, double weight, Color color) {
+    public static Site create(Point p, int index, double weight) {
         if (_pool.size() > 0) {
-            return _pool.pop().init(p, index, weight, color);
+            return _pool.pop().init(p, index, weight);
         } else {
-            return new Site(p, index, weight, color);
+            return new Site(p, index, weight);
         }
     }
 
@@ -67,7 +66,6 @@ public final class Site implements ICoord {
     public Point get_coord() {
         return _coord;
     }
-    public Color color;
     public double weight;
     private int _siteIndex;
     // the edges that define this Site's Voronoi region:
@@ -77,15 +75,14 @@ public final class Site implements ICoord {
     // ordered list of points that define the region clipped to bounds:
     private List<Point> _region;
 
-    public Site(Point p, int index, double weight, Color color) {
-        init(p, index, weight, color);
+    public Site(Point p, int index, double weight) {
+        init(p, index, weight);
     }
 
-    private Site init(Point p, int index, double weight, Color color) {
+    private Site init(Point p, int index, double weight) {
         _coord = p;
         _siteIndex = index;
         this.weight = weight;
-        this.color = color;
         return this;
     }
 
