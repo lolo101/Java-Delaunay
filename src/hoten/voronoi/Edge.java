@@ -9,7 +9,6 @@ import hoten.geom.Point;
  */
 public class Edge {
 
-    public int index;
     public Center d0, d1;  // Delaunay edge
     public Corner v0, v1;  // Voronoi edge
     public Point midpoint;  // halfway between v0,v1

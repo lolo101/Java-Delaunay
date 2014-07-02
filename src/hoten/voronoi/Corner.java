@@ -14,7 +14,6 @@ public class Corner {
     public ArrayList<Corner> adjacent = new ArrayList(); //good
     public ArrayList<Edge> protrudes = new ArrayList();
     public Point loc;
-    public int index;
     public boolean border;
     public double elevation;
     public boolean water, ocean, coast;

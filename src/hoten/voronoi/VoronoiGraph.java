@@ -79,21 +79,13 @@ public abstract class VoronoiGraph {
     }
 
     private void improveCorners() {
-        Point[] newP = new Point[corners.size()];
         for (Corner c : corners) {
             if (c.border) {
-                newP[c.index] = c.loc;
-            } else {
-                double x = 0;
-                double y = 0;
-                for (Center center : c.touches) {
-                    x += center.loc.x;
-                    y += center.loc.y;
-                }
-                newP[c.index] = new Point(x / c.touches.size(), y / c.touches.size());
+                double x = c.touches.stream().collect(averagingDouble(t -> t.loc.x));
+                double y = c.touches.stream().collect(averagingDouble(t -> t.loc.y));
+                c.loc = new Point(x, y);
             }
         }
-        corners.stream().forEach(c -> c.loc = newP[c.index]);
         edges.stream().filter(e -> e.v0 != null && e.v1 != null).forEach(e -> e.setVornoi(e.v0, e.v1));
     }
 
@@ -249,7 +241,6 @@ public abstract class VoronoiGraph {
             final LineSegment dEdge = libedge.delaunayLine();
 
             final Edge edge = new Edge();
-            edge.index = edges.size();
             edges.add(edge);
 
             edge.v0 = makeCorner(pointCornerMap, vEdge.p0);
@@ -330,7 +321,6 @@ public abstract class VoronoiGraph {
             c = new Corner();
             c.loc = p;
             c.border = bounds.liesOnAxes(p);
-            c.index = corners.size();
             corners.add(c);
             pointCornerMap.put(index, c);
         }
