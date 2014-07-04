@@ -228,11 +228,6 @@ public abstract class VoronoiGraph {
             pointCenterMap.put(p, c);
         }
 
-        //bug fix
-        for (Center c : centers) {
-            v.region(c.loc);
-        }
-
         final List<hoten.voronoi.nodename.as3delaunay.Edge> libedges = v.edges();
         final Map<Integer, Corner> pointCornerMap = new HashMap<>();
 
@@ -328,7 +323,7 @@ public abstract class VoronoiGraph {
     }
 
     private void assignCornerElevations() {
-        LinkedList<Corner> queue = new LinkedList();
+        LinkedList<Corner> queue = new LinkedList<>();
         for (Corner c : corners) {
             c.water = isWater(c.loc);
             if (c.border) {
@@ -393,7 +388,7 @@ public abstract class VoronoiGraph {
     }
 
     private void assignOceanCoastAndLand() {
-        LinkedList<Center> queue = new LinkedList();
+        LinkedList<Center> queue = new LinkedList<>();
         final double waterThreshold = .3;
         for (final Center center : centers) {
             int numWater = 0;
@@ -418,22 +413,14 @@ public abstract class VoronoiGraph {
             }
         }
         for (Center center : centers) {
-            boolean oceanNeighbor = false;
-            boolean landNeighbor = false;
-            for (Center n : center.neighbors) {
-                oceanNeighbor |= n.ocean;
-                landNeighbor |= !n.water;
-            }
+            boolean oceanNeighbor = center.neighbors.stream().anyMatch(n -> n.ocean);
+            boolean landNeighbor = center.neighbors.stream().anyMatch(n -> !n.water);
             center.coast = oceanNeighbor && landNeighbor;
         }
 
         for (Corner c : corners) {
-            int numOcean = 0;
-            int numLand = 0;
-            for (Center center : c.touches) {
-                numOcean += center.ocean ? 1 : 0;
-                numLand += !center.water ? 1 : 0;
-            }
+            long numOcean = c.touches.stream().filter(t -> t.ocean).count();
+            long numLand = c.touches.stream().filter(t -> !t.water).count();
             c.ocean = numOcean == c.touches.size();
             c.coast = numOcean > 0 && numLand > 0;
             c.water = c.border || ((numLand != c.touches.size()) && !c.coast);
@@ -459,7 +446,7 @@ public abstract class VoronoiGraph {
     }
 
     private void assignPolygonElevations() {
-        centers.stream().forEach(ce -> ce.elevation = ce.corners.stream().collect(averagingDouble(co -> co.elevation)));
+        centers.forEach(ce -> ce.elevation = ce.corners.stream().collect(averagingDouble(co -> co.elevation)));
     }
 
     private void calculateDownslopes() {
@@ -493,7 +480,7 @@ public abstract class VoronoiGraph {
     }
 
     private void assignCornerMoisture() {
-        LinkedList<Corner> queue = new LinkedList();
+        LinkedList<Corner> queue = new LinkedList<>();
         for (Corner c : corners) {
             if ((c.water || c.river > 0) && !c.ocean) {
                 c.moisture = c.river > 0 ? Math.min(3.0, (0.2 * c.river)) : 1.0;
@@ -525,10 +512,10 @@ public abstract class VoronoiGraph {
     }
 
     private void assignPolygonMoisture() {
-        centers.stream().forEach(ce -> ce.moisture = ce.corners.stream().collect(averagingDouble(co -> co.moisture)));
+        centers.forEach(ce -> ce.moisture = ce.corners.stream().collect(averagingDouble(co -> co.moisture)));
     }
 
     private void assignBiomes() {
-        centers.stream().forEach(center -> center.biome = getBiome(center));
+        centers.forEach(center -> center.biome = getBiome(center));
     }
 }
