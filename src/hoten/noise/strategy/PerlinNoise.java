@@ -17,12 +17,12 @@ public class PerlinNoise implements Noise {
     private final int HEIGHT = 1 << 8;
 
     @Override
-    public boolean isWater(Point p) {
+    public double elevation(Point p) {
         if (noise == null) {
             noise = new Perlin2d(PERSISTENCE, OCTAVE, (int) System.nanoTime()).createArray(WIDTH, HEIGHT);
         }
         int x = (int) ((p.x + 1.0) * (WIDTH >> 1));
         int y = (int) ((p.y + 1.0) * (HEIGHT >> 1));
-        return noise[x][y] < .3 + .3 * p.l2();
+        return noise[x][y];
     }
 }

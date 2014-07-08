@@ -20,7 +20,7 @@ public class RadialNoise implements Noise {
     //only the radial implementation of amitp's map generation
     //TODO implement more island shapes
     @Override
-    public boolean isWater(Point p) {
+    public double elevation(Point p) {
         double angle = Math.atan2(p.y, p.x);
         double length = 0.5 * (Math.max(Math.abs(p.x), Math.abs(p.y)) + p.length());
 
@@ -31,6 +31,6 @@ public class RadialNoise implements Noise {
                 || Math.abs(angle - dipAngle - 2 * Math.PI) < dipWidth) {
             r1 = r2 = 0.2;
         }
-        return !(length < r1 || (length > r1 * ISLAND_FACTOR && length < r2));
+        return length < r1 || (length > r1 * ISLAND_FACTOR && length < r2) ? 1.0 : 0.0;
     }
 }
